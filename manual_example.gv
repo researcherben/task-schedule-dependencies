@@ -1,0 +1,80 @@
+# https://dreampuf.github.io/GraphvizOnline/
+
+digraph G {
+#rankdir="LR";
+
+# https://stackoverflow.com/a/2012106/1164295
+  compound=true;
+
+
+  instance_123_persistent_44 [label="start here"; shape="rect"];
+ 
+  instance_492_persistent_49 [label="description: next task\lthis task (cost,dur)=[(1,2), (3,4)]\lcumulative (cost,dur)=[(1, 2), (3, 4)]\loutput param=['a', 'b']\l"; shape="rect"];
+
+  instance_442_persistent_59 [label="if a>5:
+description: another task
+this task (cost,dur)=[(5,2), (9,4)]
+cumulative (cost,dur)=[(1, 2), (3, 4)]
+output param=['e', 'f']"; shape="rect"];
+ 
+  instance_412_persistent_52 [label="if a<=5:
+description: some task
+this task (cost,dur)=[(5,2), (9,4)]
+cumulative (cost,dur)=[(1, 2), (3, 4)]
+output param=['c', 'd']"; shape="rect"];
+ 
+ instance_123_persistent_44 -> instance_492_persistent_49;
+ 
+instance_492_persistent_49 -> instance_412_persistent_52;
+ 
+ instance_492_persistent_49 -> instance_442_persistent_59;
+ 
+  instance_22_persistent_23 [label="if d>=4:
+  description: la task
+this task (cost,dur)=[(5,2), (9,4)]
+ cumulative (cost,dur)=[(1, 2), (3, 4)]
+ output param=['c', 'd']"; shape="rect"];
+ 
+ instance_412_persistent_52 -> instance_22_persistent_23;
+ 
+ subgraph cluster_instance_99_persistent_41 {
+     
+   label = "if d<4:
+   description: a task
+this task (cost,dur)=[(5,2), (9,4)]
+ cumulative (cost,dur)=[(1, 2), (3, 4)]
+ output param=['l', 'm']";
+
+instance_99_persistent_41[style="invis"];
+
+ 
+  instance_12_persistent_33 [label="description: the task
+this task (cost,dur)=[(5,2), (9,4)]
+ cumulative (cost,dur)=[(1, 2), (3, 4)]
+ output param=['k', 'p']"; shape="rect"];
+  
+  instance_11_persistent_13 [label="description: yet another task
+this task (cost,dur)=[(5,2), (9,4)]
+ cumulative (cost,dur)=[(1, 2), (3, 4)]
+ output param=['l', 'm']"; shape="rect"];
+  
+  instance_10_persistent_03 [label="description: le task
+this task (cost,dur)=[(5,2), (9,4)]
+ cumulative (cost,dur)=[(1, 2), (3, 4)]
+ output param=['l', 'm']"; shape="rect"];
+  
+  instance_12_persistent_33 -> instance_11_persistent_13;
+  instance_12_persistent_33 -> instance_10_persistent_03;
+   
+ }
+ 
+instance_412_persistent_52 -> instance_99_persistent_41 [lhead=cluster_instance_99_persistent_41];
+ 
+ instance_111_persistent_22 [label="description: later task
+this task (cost,dur)=[(1,2), (3,4)]
+ cumulative (cost,dur)=[(1, 2), (3, 4)]
+ output param=['q', 'r']"; shape="rect"];
+
+instance_99_persistent_41 -> instance_111_persistent_22 [ltail=cluster_instance_99_persistent_41];
+ 
+}
