@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
 
+import datetime
+import random
+import copy # https://docs.python.org/3/library/copy.html
 # https://pypi.org/project/pygraphviz/
 # https://pygraphviz.github.io/documentation/stable/
 import pygraphviz
-import random
-import copy # https://docs.python.org/3/library/copy.html
 """
-* Universal task ID. Randomly generated and uniquely assigned.
-* instance task id. Randomly generated and uniquely assigned. Enables duplication of task
-* referencesTask descriptionTask output parameters as a dictionary
-* Task duration. A list of five values
-* Task cost. A list of five values
-* Task staffing
-* Follow on task
-* Is child of task ID task ID
+* Universal task ID = task description.
+* unique instance task id. Enables duplication of task references
+* Task output parameters as a dictionary
+* Task duration. A list of N values
+* Task cost. A list of N values
+* Follow-on task
 * Cumulative cost
 * Cumulative time
 
 Task can be comprised of subtask. Then the duration and cost are functions of the subtasks
+
+Not included in this model: Task staffing
+
 """
 
 # def new_task_id(all_tasks: dict):
@@ -108,9 +110,12 @@ def cost_and_duration_sum(task, all_tasks):
         follow_on_task = which_task_is_instance_ID(follow_on_instance_ID, all_tasks)
         #all_tasks[follow_on_task.description,follow_on_task.instance_ID].cumulative_cost_and_duration = []
         for index, cost_dur_tuple in enumerate(task.cumulative_cost_and_duration):
+            total_day_count= cost_dur_tuple[1]+follow_on_task.cost_duration_tuples_list[index][1]
+            cumulative_date = datetime.datetime.today()+datetime.timedelta(days=total_day_count)
             all_tasks[follow_on_task.description,follow_on_task.instance_ID].cumulative_cost_and_duration.append(
                 (cost_dur_tuple[0]+follow_on_task.cost_duration_tuples_list[index][0],
-                 cost_dur_tuple[1]+follow_on_task.cost_duration_tuples_list[index][1])
+                 cost_dur_tuple[1]+follow_on_task.cost_duration_tuples_list[index][1],
+                 datetime.datetime.strftime(cumulative_date, "%Y-%m-%d")) # https://strftime.org/
             )
         all_tasks[follow_on_task.description,follow_on_task.instance_ID].cumulative_probability_of_task_success = follow_on_task.probability_of_task_success*task.cumulative_probability_of_task_success
 
@@ -131,12 +136,12 @@ def add_task_to_graph(G, task, all_tasks):
     #task.print()
     G.add_node("instance_"+str(task.instance_ID),
            label="condition: "+str(task.condition)+"\l"+
+                 "instance ID: "+str(task.instance_ID)+";  "
                  "description: "+str(task.description)+"\l"+
-                 "instance ID: "+str(task.instance_ID)+"\l"+
-                 "p(success): "+str(task.probability_of_task_success)+"\l"+
+                 "p(success): "+str(task.probability_of_task_success)+";     "+
                  "cumulative p(success): "+str(round(task.cumulative_probability_of_task_success,5))+"\l"+
-                 "this task (cost,dur)="+str(task.cost_duration_tuples_list)+"\l"+
-                 "cumulative (cost,dur)= "+str(task.cumulative_cost_and_duration)+"\l"+
+                 "cost and duration of this task="+str(task.cost_duration_tuples_list)+"\l"+
+                 "sum(cost); sum(duration)= "+str(task.cumulative_cost_and_duration)+"\l"+
                  "output param="+str(task.output_parameters_dict)+"\l",
            shape="rect");
     return G
@@ -221,6 +226,7 @@ def create_graph(G, all_tasks):
 
 if __name__ == "__main__":
     G = pygraphviz.AGraph(directed=True, compound=True)
+    #G = pygraphviz.AGraph(directed=True, compound=True, rankdir="LR")
     #G.add_node("start_here", label="start here")
 
     all_tasks = {}
