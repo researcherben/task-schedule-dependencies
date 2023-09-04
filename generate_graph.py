@@ -16,9 +16,10 @@ import pygraphviz
 * Cumulative cost
 * Cumulative time
 
-Task can be comprised of subtask. Then the duration and cost are functions of the subtasks
+Task can be comprised of subtasks. Then the duration and cost are functions of the subtasks
 
-Not included in this model: Task staffing
+TODO: given a node, step through all time ticks for that branch and calculate staffing as a function of time.
+Each branch has a separate staffing profile.
 
 """
 
@@ -52,6 +53,7 @@ class Task:
                  description,
                  probability_of_task_success,
                  cost_duration_tuples_list,
+                 staffing_list,
                  output_parameters_dict,
                  followed_by_task_instance_IDs):
         #self.persistent_ID = persistent_ID
@@ -62,6 +64,7 @@ class Task:
         self.probability_of_task_success = probability_of_task_success
         self.cumulative_probability_of_task_success = 0
         self.cost_duration_tuples_list = cost_duration_tuples_list
+        self.staffing_list = []
         self.cumulative_cost_and_duration = []
         self.output_parameters_dict = output_parameters_dict
         self.followed_by_task_instance_IDs = followed_by_task_instance_IDs
@@ -73,6 +76,7 @@ class Task:
         print('description =', self.description)
         print('probability_of_task_success =', self.probability_of_task_success)
         print('cost_duration_tuples_list =', self.cost_duration_tuples_list)
+        print('staffing_list =',self.staffing_list)
         print('output_parameters_dict =', self.output_parameters_dict)
         print('followed_by_task_instance_IDs =', self.followed_by_task_instance_IDs)
 
@@ -123,7 +127,7 @@ def cost_and_duration_sum(task, all_tasks):
         all_tasks = cost_and_duration_sum(follow_on_task, all_tasks)
 
     for this_child_task in task.child_tasks:
-        all_tasks = cost_and_duration_sum(this_child_task, all_tasks)
+        all_tasks = cost_and_duration_sum(all_tastsk[this_child_task], all_tasks)
 
     return all_tasks
 
@@ -142,6 +146,7 @@ def add_task_to_graph(G, task, all_tasks):
                  "cumulative p(success): "+str(round(task.cumulative_probability_of_task_success,5))+"\l"+
                  "cost and duration of this task="+str(task.cost_duration_tuples_list)+"\l"+
                  "sum(cost); sum(duration)= "+str(task.cumulative_cost_and_duration)+"\l"+
+                 "staffing: "+str(task.staffing_list)+"\l"+
                  "output param="+str(task.output_parameters_dict)+"\l",
            shape="rect");
     return G
@@ -166,7 +171,7 @@ def add_task_to_graph_that_has_subtasks(G, task, list_of_subtasks, all_tasks):
 #    B.add_node("instance_"+str(task.instance_ID), style="invis");
 
     for subtask in list_of_subtasks:
-        B = add_task_to_graph(B, subtask, all_tasks)
+        B = add_task_to_graph(B, all_tasks[subtask], all_tasks)
 
     return G
 
@@ -237,6 +242,7 @@ if __name__ == "__main__":
                  "start here", # description
                  1, # probability of success of this task
                  [(0,0), (0,0)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {}, # outputs
                  []) # followed by task IDs
     task.cumulative_cost_and_duration = [(0,0), (0,0)]
@@ -248,6 +254,7 @@ if __name__ == "__main__":
                  "a task", # description
                  0.91, # probability of success of this task
                  [(1,2), (3,4)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'a'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -259,6 +266,7 @@ if __name__ == "__main__":
                  "some task", # description
                  0.9, # probability of success of this task
                  [(2,2), (3,4)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'f'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -271,6 +279,7 @@ if __name__ == "__main__":
                  "the task", # description
                  0.99, # probability of success of this task
                  [(3,1), (3,4)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'a'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -284,6 +293,7 @@ if __name__ == "__main__":
                  "last task", # description
                  0.99, # probability of success of this task
                  [(1,1), (1,1)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'k'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -305,6 +315,7 @@ if __name__ == "__main__":
                  "my task", # description
                  0.99, # probability of success of this task
                  [(1,1), (1,1)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'k'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -317,6 +328,7 @@ if __name__ == "__main__":
                  "parent task", # description
                  0.99, # probability of success of this task
                  [(4,3), (3,4)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'b'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -326,6 +338,7 @@ if __name__ == "__main__":
                  "la child task", # description
                  0.8, # probability of success of this task
                  [(8,3), (3,4)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'c'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -335,6 +348,7 @@ if __name__ == "__main__":
                  "el child task", # description
                  0.4, # probability of success of this task
                  [(1,1), (2,4)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'b'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
@@ -344,15 +358,15 @@ if __name__ == "__main__":
                  "child task", # description
                  0.99, # probability of success of this task
                  [(7,7), (3,4)], # cost and duration
+                 [('a', 0.2)], # staffing: role and FTE
                  {'b'}, # outputs
                  []) # followed by task IDs
     all_tasks[(task.description, task.instance_ID)] = task
 
     all_tasks[("parent task",5678)].child_tasks = [
-    all_tasks[("la child task", 6789)],
-    all_tasks[("el child task", 7890)],
-    all_tasks[("child task", 1357)]
-    ]
+        ("la child task", 6789),
+        ("el child task", 7890),
+        ("child task", 1357)]
 
     all_tasks[("la child task", 6789)].followed_by_task_instance_IDs.append(all_tasks[("el child task", 7890)].instance_ID)
     all_tasks[("la child task", 6789)].followed_by_task_instance_IDs.append(all_tasks[("child task", 1357)].instance_ID)
@@ -363,7 +377,7 @@ if __name__ == "__main__":
 
     all_tasks = cost_and_duration_sum(all_tasks["start here",6168], all_tasks)
 
-    print("all_tasks",all_tasks)
+    #print("all_tasks",all_tasks)
 
     G = create_graph(G, all_tasks)
     #print(G)
