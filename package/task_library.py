@@ -7,7 +7,7 @@ functions and classes used by the tasks
 """
 
 def validate_that_instance_ID_is_unique(instance_ID, all_tasks) -> None:
-    """
+    """a graph query
     Args:
       instance_ID: integer
       all_tasks: a dictionary of {('task decription', integer task instance ID): <instance of Task class>}
@@ -45,7 +45,7 @@ class Task:
         self.probability_of_task_success = probability_of_task_success
         self.cumulative_probability_of_task_success = 0
         self.cost_duration_tuples_list = cost_duration_tuples_list
-        self.staffing_list = []
+        self.staffing_list = staffing_list
         self.cumulative_cost_and_duration = []
         self.output_parameters_dict = output_parameters_dict
         self.followed_by_task_instance_IDs = followed_by_task_instance_IDs
@@ -63,7 +63,7 @@ class Task:
 
 
 def cost_and_duration_sum(task, all_tasks):
-    """
+    """a graph query
     Args:
       task: an instance of the Task class
       all_tasks: a dictionary of {('task decription', integer task instance ID): <instance of Task class>}
@@ -96,7 +96,7 @@ def cost_and_duration_sum(task, all_tasks):
     return all_tasks
 
 def which_task_is_instance_ID(instance_ID, all_tasks):
-    """
+    """a graph query
     Args:
       instance_ID: integer
       all_tasks: a dictionary of {('task decription', integer task instance ID): <instance of Task class>}
@@ -122,5 +122,26 @@ def which_task_is_instance_ID(instance_ID, all_tasks):
     raise Exception("instance_ID ",instance_ID,"not found in all_tasks")
     return
 
+
+def upstream_tasks_in_branch(single_branch_of_tasks, all_tasks):
+    """a graph query
+    Args:
+      terminal_task: an instance of the Task class
+      all_tasks: a dictionary of {('task decription', integer task instance ID): <instance of Task class>}
+
+    Returns:
+      single_branch_of_tasks: a dictionary of {('task decription', integer task instance ID): <instance of Task class>}
+
+    """
+    print("[TRACE] upstream_tasks_in_branch: ", single_branch_of_tasks[-1])
+    terminal_task = single_branch_of_tasks[-1]
+    for description_instance_ID_tuple, candidate_upstream_task in all_tasks.items():
+        for task_instance_ID in candidate_upstream_task.followed_by_task_instance_IDs:
+            this_task = which_task_is_instance_ID(task_instance_ID, all_tasks)
+            if this_task.description==terminal_task.description and this_task.instance_ID==terminal_task.instance_ID:
+                single_branch_of_tasks.append(candidate_upstream_task)
+                upstream_tasks_in_branch(single_branch_of_tasks, all_tasks)
+
+    return single_branch_of_tasks
 
 # EOF

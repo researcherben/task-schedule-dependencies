@@ -197,5 +197,13 @@ if __name__ == "__main__":
     #print(G)
     G.draw("automated_digraph.png", prog="dot")
 
+    try:
+        branch = example_tasks.single_branch_of_tasks
+    except NameError:
+        pass
+
+    if 'branch' in globals():
+        for task in branch:
+            print(task.description, task.instance_ID)
 
 # EOF

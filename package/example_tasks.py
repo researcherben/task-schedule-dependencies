@@ -3,10 +3,10 @@
 import copy # https://docs.python.org/3/library/copy.html
 
 from task_library import Task
-from task_library import cost_and_duration_sum
+import task_library
 
 """
-tasks that get graphed by generate_graph.py 
+tasks that get graphed by generate_graph.py
 """
 
 all_tasks = {}
@@ -151,6 +151,8 @@ all_tasks[("child task", 1357)].followed_by_task_instance_IDs.append(all_tasks[(
 all_tasks[("el child task", 7890)].followed_by_task_instance_IDs.append(all_tasks[("the task", 2345)].instance_ID)
 
 # last step is to insert cost/duration tuples
-all_tasks = cost_and_duration_sum(all_tasks["start here",6168], all_tasks)
+all_tasks = task_library.cost_and_duration_sum(all_tasks["start here",6168], all_tasks)
+
+single_branch_of_tasks = task_library.upstream_tasks_in_branch([all_tasks[("the task", 1234)]], all_tasks)
 
 # EOF
