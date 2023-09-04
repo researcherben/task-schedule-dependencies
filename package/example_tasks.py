@@ -5,6 +5,10 @@ import copy # https://docs.python.org/3/library/copy.html
 from task_library import Task
 from task_library import cost_and_duration_sum
 
+"""
+tasks that get graphed by generate_graph.py 
+"""
+
 all_tasks = {}
 
 # need to designate an entry point for calculating cumulative sums and products
@@ -146,4 +150,7 @@ all_tasks[("some task", 6643)].followed_by_task_instance_IDs.append(all_tasks[("
 all_tasks[("child task", 1357)].followed_by_task_instance_IDs.append(all_tasks[("the task", 1234)].instance_ID)
 all_tasks[("el child task", 7890)].followed_by_task_instance_IDs.append(all_tasks[("the task", 2345)].instance_ID)
 
+# last step is to insert cost/duration tuples
 all_tasks = cost_and_duration_sum(all_tasks["start here",6168], all_tasks)
+
+# EOF

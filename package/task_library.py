@@ -2,6 +2,10 @@
 
 import datetime
 
+"""
+functions and classes used by the tasks
+"""
+
 def validate_that_instance_ID_is_unique(instance_ID, all_tasks) -> None:
     """
     Args:
@@ -117,3 +121,6 @@ def which_task_is_instance_ID(instance_ID, all_tasks):
             return all_tasks[task_description,this_instance_ID]
     raise Exception("instance_ID ",instance_ID,"not found in all_tasks")
     return
+
+
+# EOF

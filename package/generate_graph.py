@@ -22,6 +22,10 @@ Task can be comprised of subtasks. Then the duration and cost are functions of t
 TODO: given a node, step through all time ticks for that branch and calculate staffing as a function of time.
 Each branch has a separate staffing profile.
 
+To run this script use
+
+    docker run -v `pwd`:/home/jovyan <jupyter> python3 generate_graph.py
+
 """
 
 # def new_task_id(all_tasks: dict):
@@ -192,3 +196,6 @@ if __name__ == "__main__":
     G = create_graph(G, example_tasks.all_tasks)
     #print(G)
     G.draw("automated_digraph.png", prog="dot")
+
+
+# EOF
