@@ -204,6 +204,6 @@ if __name__ == "__main__":
 
     if 'branch' in globals():
         for task in branch:
-            print(task.description, task.instance_ID)
+            print(task.description,"(",task.instance_ID,")",task.cost_duration_tuples_list[0][1],task.staffing_list)
 
 # EOF
